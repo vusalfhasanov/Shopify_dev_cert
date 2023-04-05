@@ -36,9 +36,12 @@
         "button"
       ],
       "settings": {
+        "desktop_video": "shopify:\/\/files\/videos\/Desktop video.mp4",
+        "mobile_video": "shopify:\/\/files\/videos\/Mobile video.mp4",
+        "show_video": true,
         "image": "shopify:\/\/shop_images\/banner_image_main.jpg",
         "image_overlay_opacity": 0,
-        "image_height": "large",
+        "image_height": "medium",
         "desktop_content_position": "bottom-center",
         "show_text_box": true,
         "desktop_content_alignment": "center",
@@ -77,6 +80,9 @@
     },
     "c8d4213a-b7f4-431e-85e5-f8fc98e14aff": {
       "type": "featured-blog",
+      "custom_css": [
+
+      ],
       "settings": {
         "heading": "Blog posts 💡",
         "heading_size": "h2",
