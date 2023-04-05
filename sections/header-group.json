@@ -9,7 +9,7 @@
           "type": "announcement",
           "settings": {
             "text": "☕Sale Ends in",
-            "countdown": 1,
+            "countdown": 2,
             "text_alignment": "center",
             "color_scheme": "accent-1",
             "link": "shopify:\/\/collections\/all"

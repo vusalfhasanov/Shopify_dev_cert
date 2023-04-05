@@ -1555,6 +1555,22 @@
         "id": "cart_drawer_collection",
         "label": "t:settings_schema.cart.settings.cart_drawer.collection.label",
         "info": "t:settings_schema.cart.settings.cart_drawer.collection.info"
+      },
+      {
+        "type": "text",
+        "id": "upsell_title",
+        "label": "Upsell product title"
+      },
+      {
+        "type": "product",
+        "id": "upsell_product",
+        "label": "Upsell Product",
+        "info": "Upsell Product"
+      },
+      {
+        "type": "text",
+        "id": "upsell_button_title",
+        "label": "Upsell button title"
       }
     ]
   }

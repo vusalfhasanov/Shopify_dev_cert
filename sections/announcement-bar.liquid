@@ -79,13 +79,11 @@
         timeText += minutes.replace(/^0+/, '') + " " + minutesText + ", ";
       }
 
-      if (seconds > 0 || minutes > 0 || hours > 0 || days > 0) {
-        seconds = ("0" + seconds).slice(-2); // Ensure seconds has two digits
-        var secondsText = seconds === "01"
-          ? "Second"
-          : "Seconds";
-        timeText += seconds.replace(/^0+/, '') + " " + secondsText;
-      }
+      seconds = ("0" + seconds).slice(-2); // Ensure seconds has two digits
+      var secondsText = seconds === "01"
+        ? "Second"
+        : "Seconds";
+      timeText += seconds.replace(/^0+/, '') + " " + secondsText;
 
       display.textContent = timeText;
 

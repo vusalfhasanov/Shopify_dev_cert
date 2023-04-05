@@ -1,0 +1,69 @@
+{% comment %} Upsell Product {% endcomment %}
+{%- if cart != empty -%}
+  <div id="upsell_product_wrapper" class="upsell_product_wrapper">
+    <h3>{{ settings.upsell_title | escape }}</h3>
+    <table class="cart-items" role="table">
+      <tbody role="rowgroup">
+        <tr
+          id="CartDrawer-Item-{{ item.index | plus: 1 }}"
+          class="cart-item"
+          role="row">
+          <td
+            class="cart-item__media"
+            role="cell"
+            headers="CartDrawer-ColumnProductImage">
+            {% if settings.upsell_product.featured_image %}
+              {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
+              <a
+                href="{{ item.url }}"
+                class="cart-item__link"
+                tabindex="-1"
+                aria-hidden="true"></a>
+              <img
+                class="cart-item__image"
+                src="{{ settings.upsell_product.featured_image | article_img_url: width: 300 }}"
+                alt="{{ item.image.alt | escape }}"
+                loading="lazy"
+                width="150"
+                height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}">
+            {% endif %}
+          </td>
+          <td
+            class="cart-item__details"
+            role="cell"
+            headers="CartDrawer-ColumnProduct">
+            <a href="{{ settings.upsell_product.url }}" class="cart-item__name h4 break">
+              {{- settings.upsell_product.title | escape -}}
+            </a>
+          </td>
+          <td
+            class="cart-item__totals right"
+            role="cell"
+            headers="CartDrawer-ColumnTotal">
+            <div class="cart-item__price-wrapper">
+              <span class="price price--end">
+                {{ settings.upsell_product.price | money }}
+              </span>
+            </div>
+          </td>
+          <td
+            class="cart-item__quantity"
+            role="cell"
+            headers="CartDrawer-ColumnQuantity">
+            {%- render 'upsell-buy-buttons' -%}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+{%- endif -%}
+
+{% comment %} End Upsell Product {% endcomment %}
+
+
+<script>
+  const upsellProductWrapper = document.getElementById('upsell_product_wrapper');
+  const upsellButton = document.querySelector('.product-form__submit');
+  const hideUpsell = document.querySelector(".hide_upsell");
+</script>
