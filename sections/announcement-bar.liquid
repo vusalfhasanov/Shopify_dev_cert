@@ -1,105 +1,194 @@
 {%- for block in section.blocks -%}
   {%- case block.type -%}
     {%- when 'announcement' -%}
-      <div class="announcement-bar color-{{ block.settings.color_scheme }} gradient" role="region" aria-label="{{ 'sections.header.announcement' | t }}" {{ block.shopify_attributes }}>
-        {%- if block.settings.text != blank -%}
-          {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}" class="announcement-bar__link link link--text focus-inset animate-arrow">
+    <div
+      class="announcement-bar color-{{ block.settings.color_scheme }} gradient"
+      role="region"
+      aria-label="{{ 'sections.header.announcement' | t }}"
+      {{ block.shopify_attributes }}>
+      {%- if block.settings.text != blank or block.settings.countdown != blank -%}
+        {%- if block.settings.link != blank -%}
+          <a href="{{ block.settings.link }}" class="announcement-bar__link link link--text focus-inset animate-arrow">
           {%- endif -%}
-              <div class="page-width">
-                <p class="announcement-bar__message {{ block.settings.text_alignment }} h5">
-                  <span>{{ block.settings.text | escape }}</span>
-                  {%- if block.settings.link != blank -%}
-                    {% render 'icon-arrow' %}
-                  {%- endif -%}
-                </p>
-              </div>
+          <div class="page-width">
+            <p class="announcement-bar__message {{ block.settings.text_alignment }} h5">
+              <span>{{ block.settings.text | escape }}</span>
+              {%- if block.settings.link != blank -%}
+                {% render 'icon-arrow' %}
+              {%- endif -%}
+              <input
+                type="hidden"
+                id="timer-duration"
+                name="timer-duration"
+                value="{{ block.settings.countdown }}"
+                data-duration="172800">
+              <span id="time"></span>
+            </p>
+          </div>
           {%- if block.settings.link != blank -%}
-            </a>
-          {%- endif -%}
+          </a>
         {%- endif -%}
-      </div>
+      {%- endif -%}
+    </div>
   {%- endcase -%}
 {%- endfor -%}
 
+<script>
+  function startTimer(duration, display) {
+    var startTime = parseInt(localStorage.getItem('startTime')) || Math.floor(Date.now() / 1000);
+    var timer = duration * 24 * 60 * 60 - (Math.floor(Date.now() / 1000) - startTime),
+      days,
+      hours,
+      minutes,
+      seconds;
+    setInterval(function() {
+      days = parseInt(timer / (60 * 60 * 24), 10);
+      hours = parseInt((timer % (60 * 60 * 24)) / (60 * 60), 10);
+      minutes = parseInt((timer % (60 * 60)) / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      var timeText = "";
+
+      if (days > 0) {
+        days = days.toString();
+        if (days === "1") {
+          timeText += "1 Day, ";
+        } else {
+          days = ("0" + days).slice(-2); // Ensure days has two digits
+          if (days.charAt(0) === "0") {
+            timeText += days.charAt(1) + " Days, "; // Show only the second digit
+          } else {
+            timeText += days + " Days, ";
+          }
+        }
+      }
+
+      if (hours > 0 || days > 0) {
+        hours = ("0" + hours).slice(-2); // Ensure hours has two digits
+        var hoursText = hours === "01"
+          ? "Hour"
+          : "Hours";
+        timeText += hours.replace(/^0+/, '') + " " + hoursText + ", ";
+      }
+
+      if (minutes > 0 || hours > 0 || days > 0) {
+        minutes = ("0" + minutes).slice(-2); // Ensure minutes has two digits
+        var minutesText = minutes === "01"
+          ? "Minute"
+          : "Minutes";
+        timeText += minutes.replace(/^0+/, '') + " " + minutesText + ", ";
+      }
+
+      if (seconds > 0 || minutes > 0 || hours > 0 || days > 0) {
+        seconds = ("0" + seconds).slice(-2); // Ensure seconds has two digits
+        var secondsText = seconds === "01"
+          ? "Second"
+          : "Seconds";
+        timeText += seconds.replace(/^0+/, '') + " " + secondsText;
+      }
+
+      display.textContent = timeText;
+
+      if (-- timer < 0) {
+        timer = duration * 24 * 60 * 60;
+      }
+
+      localStorage.setItem('startTime', Math.floor(Date.now() / 1000) - (duration * 24 * 60 * 60 - timer));
+    }, 1000);
+  }
+
+  var durationInput = document.querySelector('#timer-duration');
+
+  window.onload = function() {
+    var display = document.querySelector('#time');
+    startTimer(durationInput.value, display);
+
+    durationInput.addEventListener("change", function() {
+      startTimer(durationInput.value, display);
+    });
+  };
+</script>
+
 {% schema %}
-{
-  "name": "t:sections.announcement-bar.name",
-  "max_blocks": 12,
-  "class": "announcement-bar-section",
-  "blocks": [
-    {
-      "type": "announcement",
-      "name": "t:sections.announcement-bar.blocks.announcement.name",
-      "settings": [
+  {
+    "name": "t:sections.announcement-bar.name",
+    "max_blocks": 12,
+    "class": "announcement-bar-section",
+    "blocks": [
+      {
+        "type": "announcement",
+        "name": "t:sections.announcement-bar.blocks.announcement.name",
+        "settings": [
+          {
+            "type": "text",
+            "id": "text",
+            "default": "Welcome to our store",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.text.label"
+          },
+          {
+            "type": "number",
+            "id": "countdown",
+            "label": "Sale days",
+            "default": 3
+          },
+          {
+            "type": "select",
+            "id": "text_alignment",
+            "options": [
+              {
+                "value": "left",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__1.label"
+              }, {
+                "value": "center",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__2.label"
+              }, {
+                "value": "right",
+                "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__3.label"
+              }
+            ],
+            "default": "center",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.label"
+          },
+          {
+            "type": "select",
+            "id": "color_scheme",
+            "options": [
+              {
+                "value": "accent-1",
+                "label": "t:sections.all.colors.accent_1.label"
+              },
+              {
+                "value": "accent-2",
+                "label": "t:sections.all.colors.accent_2.label"
+              },
+              {
+                "value": "background-1",
+                "label": "t:sections.all.colors.background_1.label"
+              },
+              {
+                "value": "background-2",
+                "label": "t:sections.all.colors.background_2.label"
+              }, {
+                "value": "inverse",
+                "label": "t:sections.all.colors.inverse.label"
+              }
+            ],
+            "default": "accent-1",
+            "label": "t:sections.all.colors.label"
+          }, {
+            "type": "url",
+            "id": "link",
+            "label": "t:sections.announcement-bar.blocks.announcement.settings.link.label"
+          }
+        ]
+      }
+    ],
+    "default": {
+      "blocks": [
         {
-          "type": "text",
-          "id": "text",
-          "default": "Welcome to our store",
-          "label": "t:sections.announcement-bar.blocks.announcement.settings.text.label"
-        },
-        {
-          "type": "select",
-          "id": "text_alignment",
-          "options": [
-            {
-              "value": "left",
-              "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__1.label"
-            },
-            {
-              "value": "center",
-              "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__2.label"
-            },
-            {
-              "value": "right",
-              "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.options__3.label"
-            }
-          ],
-          "default": "center",
-          "label": "t:sections.announcement-bar.blocks.announcement.settings.text_alignment.label"
-        },
-        {
-          "type": "select",
-          "id": "color_scheme",
-          "options": [
-            {
-              "value": "accent-1",
-              "label": "t:sections.all.colors.accent_1.label"
-            },
-            {
-              "value": "accent-2",
-              "label": "t:sections.all.colors.accent_2.label"
-            },
-            {
-              "value": "background-1",
-              "label": "t:sections.all.colors.background_1.label"
-            },
-            {
-              "value": "background-2",
-              "label": "t:sections.all.colors.background_2.label"
-            },
-            {
-              "value": "inverse",
-              "label": "t:sections.all.colors.inverse.label"
-            }
-          ],
-          "default": "accent-1",
-          "label": "t:sections.all.colors.label"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "t:sections.announcement-bar.blocks.announcement.settings.link.label"
+          "type": "announcement"
         }
       ]
     }
-  ],
-  "default": {
-    "blocks": [
-      {
-        "type": "announcement"
-      }
-    ]
   }
-}
 {% endschema %}
